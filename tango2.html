@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>英単語4択クイズ</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 20px; }
+    .quiz-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 600px; margin: auto; }
+    .question { font-size: 24px; margin-bottom: 20px; }
+    .options button { display: block; margin: 10px auto; padding: 10px 20px; font-size: 18px; cursor: pointer; border-radius: 5px; border: 1px solid #ccc; background-color: #eee; }
+    .options button:hover { background-color: #ddd; }
+    .result { margin-top: 20px; font-size: 20px; height: 24px; }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="question" id="question"></div>
+    <div class="options">
+      <button onclick="checkAnswer(0)" id="btn0"></button>
+      <button onclick="checkAnswer(1)" id="btn1"></button>
+      <button onclick="checkAnswer(2)" id="btn2"></button>
+      <button onclick="checkAnswer(3)" id="btn3"></button>
+    </div>
+    <div class="result" id="result"></div>
+  </div>
+  <script>
+    const words = [ { en: "create", ja: "創り出す" },
+      { en: "increase", ja: "増加する" },
+      { en: "improve", ja: "向上させる" },
+      { en: "mean", ja: "意味する" },
+      { en: "own", ja: "所有している" },
+      { en: "include", ja: "含む" },
+      { en: "consider", ja: "考える" },
+      { en: "allow", ja: "許す" },
+      { en: "suggest", ja: "提案する" },
+      { en: "produce", ja: "生産する" },
+      { en: "decide", ja: "決める" },
+      { en: "offer", ja: "提供する" },
+      { en: "require", ja: "必要とする" },
+      { en: "share", ja: "共有する" },
+      { en: "store", ja: "保存する" },
+      { en: "tend", ja: "傾向がある" },
+      { en: "concern", ja: "心配する" },
+      { en: "describe", ja: "説明する" },
+      { en: "involve", ja: "関与させる" },
+      { en: "reduce", ja: "減らす" },
+      { en: "design", ja: "設計する" },
+      { en: "force", ja: "強いる" },
+      { en: "limit", ja: "制限する" },
+      { en: "bear", ja: "耐える" },
+      { en: "affect", ja: "影響する" },
+      { en: "deal", ja: "処理する" },
+      { en: "avoid", ja: "避ける" },
+      { en: "relate", ja: "関連づける" },
+      { en: "realize", ja: "気づく" },
+      { en: "encourage", ja: "奨励する" },
+      { en: "compare", ja: "比較する" },
+      { en: "measure", ja: "測る" },
+      { en: "exist", ja: "存在する" },
+      { en: "mark", ja: "印をつける" },
+      { en: "challenge", ja: "挑戦する" },
+      { en: "depend", ja: "頼る" },
+      { en: "object", ja: "反対する" },
+      { en: "demand", ja: "要求する" },
+      { en: "found", ja: "設立する" },
+      { en: "complete", ja: "完成させる" },
+      { en: "idea", ja: "考え" },
+      { en: "accord", ja: "一致" },
+      { en: "company", ja: "会社" },
+      { en: "interest", ja: "興味" },
+      { en: "research", ja: "研究" },
+      { en: "cause", ja: "原因" },
+      { en: "reason", ja: "理由" },
+      { en: "effect", ja: "効果" },
+      { en: "influence", ja: "影響" },
+      { en: "situation", ja: "状況" },
+      { en: "environment", ja: "環境" },
+      { en: "skill", ja: "技能" },
+      { en: "matter", ja: "事柄" },
+      { en: "view", ja: "見解" },
+      { en: "value", ja: "価値" },
+      { en: "species", ja: "種" },
+      { en: "thought", ja: "考え" },
+      { en: "knowledge", ja: "知識" },
+      { en: "memory", ja: "記憶" },
+      { en: "practice", ja: "実践" },
+      { en: "benefit", ja: "利益" },
+      { en: "theory", ja: "理論" },
+      { en: "issue", ja: "問題" },
+      { en: "experiment", ja: "実験" },
+      { en: "article", ja: "記事" },
+      { en: "focus", ja: "焦点" },
+      { en: "subject", ja: "話題" },
+      { en: "project", ja: "計画" },
+      { en: "quality", ja: "質" },
+      { en: "role", ja: "役割" },
+      { en: "term", ja: "用語" },
+      { en: "statement", ja: "声明" },
+      { en: "material", ja: "材料" },
+      { en: "evidence", ja: "証拠" },
+      { en: "source", ja: "源" },
+      { en: "community", ja: "社会" },
+      { en: "technology", ja: "技術" },
+      { en: "culture", ja: "文化" },
+      { en: "appropriate", ja: "適切な" },
+      { en: "likely", ja: "ありそうな" },
+      { en: "possible", ja: "可能な" },
+      { en: "individual", ja: "個人の" },
+      { en: "public", ja: "公の" },
+      { en: "common", ja: "共通の" },
+      { en: "certain", ja: "確かな" },
+      { en: "similar", ja: "似ている" },
+      { en: "recent", ja: "最近の" },
+      { en: "major", ja: "主要な" },
+      { en: "patient", ja: "忍耐強い" },
+      { en: "particular", ja: "特定の" },
+      { en: "physical", ja: "身体の" },
+      { en: "various", ja: "さまざまな" },
+      { en: "available", ja: "利用できる" },
+      { en: "native", ja: "出生地の" },
+      { en: "political", ja: "政治の" },
+      { en: "due", ja: "予定された" },
+      { en: "blank", ja: "空白の" },
+      { en: "ancient", ja: "古代の" },
+      { en: "correct", ja: "正しい" },
+      { en: "despite", ja: "～にもかかわらず" }]; // 略（そのまま）
+
+    let quizWords = [...words];
+    let current = 0;
+    let score = 0;
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function nextQuestion() {
+      document.getElementById("result").innerText = "";
+      if (current >= quizWords.length) {
+        document.getElementById("question").innerText = `終了！スコア：${score}/${quizWords.length}`;
+        document.querySelector(".options").style.display = "none";
+        return;
+      }
+
+      let q = quizWords[current];
+      let choices = [q.ja];
+      while (choices.length < 4) {
+        let r = words[Math.floor(Math.random() * words.length)].ja;
+        if (!choices.includes(r)) choices.push(r);
+      }
+      shuffle(choices);
+
+      document.getElementById("question").innerText = `Q${current + 1}. ${q.en}`;
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`btn${i}`);
+        btn.innerText = choices[i];
+        btn.dataset.correct = choices[i] === q.ja;
+      }
+    }
+
+    function checkAnswer(index) {
+      const correct = document.getElementById(`btn${index}`).dataset.correct === "true";
+      const resultDiv = document.getElementById("result");
+      if (correct) {
+        resultDiv.innerText = "正解！";
+        resultDiv.style.color = "green";
+        score++;
+      } else {
+        resultDiv.innerText = `不正解！正解は「${quizWords[current].ja}」でした。`;
+        resultDiv.style.color = "red";
+      }
+      current++;
+      setTimeout(nextQuestion, 1000);
+    }
+
+    shuffle(quizWords);
+    nextQuestion();
+  </script>
+</body>
+</html>
